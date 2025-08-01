@@ -1,0 +1,102 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+    text-align: center;
+}
+
+header {
+    padding: 20px;
+    background-color: #1f1f1f;
+    border-bottom: 2px solid #333;
+}
+
+h1 {
+    margin: 0;
+    font-size: 2em;
+    color: #f5c518; /* golden accent */
+}
+
+p {
+    margin: 8px 0;
+}
+
+.choice-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 40px auto;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.choice {
+    background-color: #1f1f1f;
+    padding: 15px;
+    border-radius: 10px;
+    width: 280px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.choice:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(245, 197, 24, 0.6);
+}
+
+.choice img {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.choice p {
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.vs {
+    font-size: 2em;
+    font-weight: bold;
+    color: #f5c518;
+}
+
+#progress {
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #cccccc;
+}
+
+#results {
+    margin: 40px auto;
+    max-width: 600px;
+}
+
+#results h2 {
+    font-size: 1.8em;
+    color: #f5c518;
+}
+
+#rankingList {
+    text-align: left;
+    font-size: 1.2em;
+    margin: 20px;
+    line-height: 1.6;
+}
+
+#downloadBtn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #f5c518;
+    color: #121212;
+    font-size: 1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#downloadBtn:hover {
+    background-color: #e0b814;
+}
