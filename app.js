@@ -1,5 +1,3 @@
-// Make sure this script is linked after data.js in index.html
-
 // Shuffle array
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -30,11 +28,11 @@ function showPair() {
     const songA = roundSongs[currentPairIndex];
     const songB = roundSongs[currentPairIndex + 1];
 
-    songTitleLeft.textContent = songA.title;
-    albumArtLeft.src = songA.albumArt;
+    songTitleLeft.textContent = songA.name;
+    albumArtLeft.src = songA.art;
 
-    songTitleRight.textContent = songB.title;
-    albumArtRight.src = songB.albumArt;
+    songTitleRight.textContent = songB.name;
+    albumArtRight.src = songB.art;
 
     progressText.textContent = `Match ${Math.ceil((currentPairIndex + 2) / 2)} of ${Math.ceil(roundSongs.length / 2)}`;
   } else {
@@ -58,8 +56,8 @@ function startNextRound() {
   if (nextRound.length === 1) {
     container.innerHTML = `
       <h2>Your winner:</h2>
-      <img src="${nextRound[0].albumArt}" alt="${nextRound[0].title}" style="max-width: 300px; border-radius: 10px;">
-      <h3>${nextRound[0].title}</h3>
+      <img src="${nextRound[0].art}" alt="${nextRound[0].name}" style="max-width: 300px; border-radius: 10px;">
+      <h3>${nextRound[0].name}</h3>
     `;
     return;
   }
