@@ -1,178 +1,74 @@
-// Assume songs array is defined in data.js with { name, art } for each song
-
 // DOM Elements
-const leftBtn = document.getElementById('left-btn');
-const rightBtn = document.getElementById('right-btn');
-const progressText = document.getElementById('progress');
-const songTitleLeft = document.getElementById('song-title-left');
-const songTitleRight = document.getElementById('song-title-right');
-const albumArtLeft = document.getElementById('album-art-left');
-const albumArtRight = document.getElementById('album-art-right');
-const container = document.getElementById('container');
+const songTitleLeft = document.getElementById("song-title-left");
+const songTitleRight = document.getElementById("song-title-right");
+const albumArtLeft = document.getElementById("album-art-left");
+const albumArtRight = document.getElementById("album-art-right");
+const leftBtn = document.getElementById("left-btn");
+const rightBtn = document.getElementById("right-btn");
+const progress = document.getElementById("progress");
+const container = document.getElementById("container");
 
-let sortedSongs = [];
-let currentMerge = null; // {left: [], right: [], result: [], leftIndex, rightIndex}
-let stack = [];
-
-// Merge sort with manual comparisons
-function startSort(array) {
-  if (array.length <= 1) {
-    finishSorting(array);
-    return;
+// Shuffle array for randomness
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
-  // Split the array into halves and push sorting tasks onto stack
-  stack.push({array: array, stage: 'split'});
-  processStack();
+  return array;
 }
 
-function processStack() {
-  if (stack.length === 0) return;
+let currentPairs = []; // stack of comparisons
+let mergeQueue = []; // stack of merges
+let ranking = []; // final ranking
 
-  const task = stack.pop();
-
-  if (task.stage === 'split') {
-    const arr = task.array;
-    if (arr.length <= 1) {
-      // Already sorted
-      task.result = arr;
-      // Save result to pass back
-      stack.push({stage: 'mergeResult', result: task.result});
-      processStack();
-    } else {
-      // Split and sort left and right
-      const mid = Math.floor(arr.length / 2);
-      const left = arr.slice(0, mid);
-      const right = arr.slice(mid);
-
-      // We push merging task AFTER both halves are sorted
-      stack.push({stage: 'merge', left, right, result: [], leftIndex:0, rightIndex:0});
-      stack.push({array: right, stage: 'split'});
-      stack.push({array: left, stage: 'split'});
-
-      processStack();
-    }
-  } else if (task.stage === 'mergeResult') {
-    if (stack.length === 0) {
-      // This is the final sorted array
-      finishSorting(task.result);
-    } else {
-      // Pass result up to merging task
-      const top = stack.pop();
-      if (top.stage === 'merge') {
-        // One side done, save as left or right sorted
-        if (!top.leftSorted) {
-          top.leftSorted = task.result;
-        } else if (!top.rightSorted) {
-          top.rightSorted = task.result;
-        }
-        // Put back on stack and continue merging if both sides sorted
-        stack.push(top);
-
-        if (top.leftSorted && top.rightSorted) {
-          // Ready to merge by asking user comparisons
-          currentMerge = top;
-          showNextComparison();
-        } else {
-          processStack();
-        }
+// Prepare shuffled pairs for sorting
+function prepareSorter(items) {
+  items = shuffle(items);
+  // Start as individual lists for merge sort
+  let lists = items.map((song) => [song]);
+  while (lists.length > 1) {
+    const newLists = [];
+    for (let i = 0; i < lists.length; i += 2) {
+      if (i + 1 < lists.length) {
+        mergeQueue.push([lists[i], lists[i + 1], []]);
+        newLists.push([]); // placeholder
       } else {
-        // Unexpected, just continue
-        stack.push(top);
-        processStack();
+        newLists.push(lists[i]);
       }
     }
-  } else if (task.stage === 'merge') {
-    // Should never get here without left and right sorted set
-    if (task.leftSorted && task.rightSorted) {
-      currentMerge = task;
-      showNextComparison();
-    } else {
-      // Wait for sides to sort
-      stack.push(task);
-    }
+    lists = newLists;
   }
+  nextComparison();
 }
 
-function showNextComparison() {
-  const leftArr = currentMerge.leftSorted;
-  const rightArr = currentMerge.rightSorted;
-  const lIndex = currentMerge.leftIndex;
-  const rIndex = currentMerge.rightIndex;
-
-  if (lIndex >= leftArr.length && rIndex >= rightArr.length) {
-    // Merge done, save and continue
-    const result = currentMerge.result;
-    stack.pop(); // remove currentMerge task
-    stack.push({stage: 'mergeResult', result});
-    currentMerge = null;
-    processStack();
+// Show next comparison
+function nextComparison() {
+  if (mergeQueue.length === 0) {
+    finishRanking();
     return;
   }
 
-  if (lIndex >= leftArr.length) {
-    // No left items left, add right item
-    currentMerge.result.push(rightArr[rIndex]);
-    currentMerge.rightIndex++;
-    showNextComparison();
-    return;
-  }
+  const current = mergeQueue[mergeQueue.length - 1];
+  const [leftList, rightList, merged] = current;
 
-  if (rIndex >= rightArr.length) {
-    // No right items left, add left item
-    currentMerge.result.push(leftArr[lIndex]);
-    currentMerge.leftIndex++;
-    showNextComparison();
-    return;
-  }
+  if (leftList.length > 0 && rightList.length > 0) {
+    const leftSong = leftList[0];
+    const rightSong = rightList[0];
 
-  // Show pair to user for choice
-  songTitleLeft.textContent = leftArr[lIndex].name;
-  albumArtLeft.src = leftArr[lIndex].art;
-  songTitleRight.textContent = rightArr[rIndex].name;
-  albumArtRight.src = rightArr[rIndex].art;
-  progressText.textContent = `Ranking in progress...`;
+    songTitleLeft.textContent = leftSong.name;
+    albumArtLeft.src = leftSong.art;
+    songTitleRight.textContent = rightSong.name;
+    albumArtRight.src = rightSong.art;
 
-  // Enable buttons for user choice
-  leftBtn.disabled = false;
-  rightBtn.disabled = false;
-}
-
-function pickSong(choice) {
-  if (!currentMerge) return;
-
-  const leftArr = currentMerge.leftSorted;
-  const rightArr = currentMerge.rightSorted;
-
-  if (choice === 'left') {
-    currentMerge.result.push(leftArr[currentMerge.leftIndex]);
-    currentMerge.leftIndex++;
+    const comparisonsLeft = mergeQueue.reduce(
+      (acc, cur) => acc + cur[0].length + cur[1].length,
+      0
+    );
+    progress.textContent = `Comparisons left: ${comparisonsLeft}`;
   } else {
-    currentMerge.result.push(rightArr[currentMerge.rightIndex]);
-    currentMerge.rightIndex++;
-  }
-  showNextComparison();
-}
+    // Merge leftovers and pop
+    current[2].push(...leftList, ...rightList);
+    mergeQueue.pop();
 
-leftBtn.addEventListener('click', () => {
-  pickSong('left');
-});
-
-rightBtn.addEventListener('click', () => {
-  pickSong('right');
-});
-
-function finishSorting(finalSorted) {
-  // Clear UI and show full ranked list
-  container.innerHTML = '<h2>Your full ranking:</h2><ol id="ranking-list"></ol>';
-  progressText.textContent = 'Sorting complete!';
-
-  const ol = document.getElementById('ranking-list');
-  finalSorted.forEach(song => {
-    const li = document.createElement('li');
-    li.textContent = song.name;
-    ol.appendChild(li);
-  });
-}
-
-// Start sorting when page loads
-startSort([...songs]);
+    if (mergeQueue.length > 0) {
+      //
