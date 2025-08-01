@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Killers Song Sorter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>The Killers Song Sorter</h1>
+        <p>Pick your favorite between the two songs until you’ve sorted them all!</p>
+    </header>
+
+    <main id="sorter">
+        <div class="choice-container">
+            <div class="choice" id="choiceA">
+                <img id="imgA" src="" alt="Album Art A">
+                <p id="songA">Song A</p>
+            </div>
+            <div class="vs">VS</div>
+            <div class="choice" id="choiceB">
+                <img id="imgB" src="" alt="Album Art B">
+                <p id="songB">Song B</p>
+            </div>
+        </div>
+        <div id="progress">Progress: 0%</div>
+    </main>
+
+    <section id="results" style="display:none;">
+        <h2>Your Ranking:</h2>
+        <ol id="rankingList"></ol>
+        <button id="downloadBtn">Download Ranking as Text</button>
+    </section>
+
+    <script src="data.js"></script>
+    <script>
+        let songs = [...killersSongs];
+        let pairs = [];
+        let ranking = [];
+
+        // Generate all unique pairs
+        for (let i = 0; i < songs.length; i++) {
+            for (let j = i + 1; j < songs.length; j++) {
+                pairs.push([songs[i], songs[j]]);
+            }
+        }
+
+        let currentIndex = 0;
+
+        function updateChoices() {
+            if (currentIndex >= pairs.length) {
+                showResults();
+                return;
+            }
+            const [songA, songB] = pairs[currentIndex];
+            document.getElementById('songA').textContent = songA.name;
+            document.getElementById('imgA').src = songA.art;
+
+            document.getElementById('songB').textContent = songB.name;
+            document.getElementById('imgB').src = songB.art;
+
+            document.getElementById('progress').textContent = `Progress: ${Math.floor((currentIndex / pairs.length) * 100)}%`;
+        }
+
+        function choose(winner, loser) {
+            ranking.push(winner);
+            currentIndex++;
+            updateChoices();
+        }
+
+        function showResults() {
+            document.getElementById('sorter').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            let list = document.getElementById('rankingList');
+            ranking.forEach((song, index) => {
+                let li = document.createElement('li');
+                li.textContent = `${index + 1}. ${song.name}`;
+                list.appendChild(li);
+            });
+        }
+
+        document.getElementById('choiceA').addEventListener('click', () => choose(pairs[currentIndex][0], pairs[currentIndex][1]));
+        document.getElementById('choiceB').addEventListener('click', () => choose(pairs[currentIndex][1], pairs[currentIndex][0]));
+
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            let text = ranking.map((s, i) => `${i + 1}. ${s.name}`).join('\n');
+            let blob = new Blob([text], {type: 'text/plain'});
+            let link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'killers-ranking.txt';
+            link.click();
+        });
+
+        updateChoices();
+    </script>
+</body>
+</html>
