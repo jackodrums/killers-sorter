@@ -1,102 +1,58 @@
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
     background-color: #121212;
-    color: #ffffff;
+    color: #f1f1f1;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
     text-align: center;
 }
 
-header {
-    padding: 20px;
-    background-color: #1f1f1f;
-    border-bottom: 2px solid #333;
+.container {
+    max-width: 600px;
+    margin: auto;
 }
 
 h1 {
-    margin: 0;
-    font-size: 2em;
-    color: #f5c518; /* golden accent */
+    color: #ffffff;
 }
 
-p {
-    margin: 8px 0;
-}
-
-.choice-container {
+.choices {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 40px auto;
-    gap: 40px;
-    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 30px;
 }
 
-.choice {
-    background-color: #1f1f1f;
+.song-card {
+    width: 45%;
+    background: #1e1e1e;
     padding: 15px;
-    border-radius: 10px;
-    width: 280px;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.choice:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(245, 197, 24, 0.6);
-}
-
-.choice img {
-    width: 100%;
     border-radius: 8px;
+    text-align: center;
+}
+
+.song-card img {
+    width: 100%;
+    border-radius: 5px;
     margin-bottom: 10px;
 }
 
-.choice p {
-    font-size: 1.1em;
-    font-weight: bold;
+.song-card button {
+    background-color: #bb86fc;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
 }
 
-.vs {
-    font-size: 2em;
-    font-weight: bold;
-    color: #f5c518;
+.song-card button:hover {
+    background-color: #9a67ea;
 }
 
 #progress {
     margin-top: 20px;
-    font-size: 1.2em;
-    color: #cccccc;
-}
-
-#results {
-    margin: 40px auto;
-    max-width: 600px;
-}
-
-#results h2 {
-    font-size: 1.8em;
-    color: #f5c518;
-}
-
-#rankingList {
-    text-align: left;
-    font-size: 1.2em;
-    margin: 20px;
-    line-height: 1.6;
-}
-
-#downloadBtn {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #f5c518;
-    color: #121212;
-    font-size: 1em;
-    font-weight: bold;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#downloadBtn:hover {
-    background-color: #e0b814;
+    font-size: 14px;
+    color: #ccc;
 }
