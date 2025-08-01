@@ -13,30 +13,37 @@ const leftBtn = document.getElementById('left-btn');
 const rightBtn = document.getElementById('right-btn');
 const progressText = document.getElementById('progress');
 
-let resolveChoice; // To store Promise resolver for user choice
+let resolveChoice; // For Promise resolution when user picks
 
-// Calculate total comparisons for merge sort: n * ceil(log2(n))
+// Fisher-Yates shuffle to randomize initial song order
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// Calculate total comparisons for merge sort
 function calculateTotalComparisons(n) {
   return Math.ceil(n * Math.log2(n));
 }
 
-// Show two songs for user choice, returns Promise that resolves 'left' or 'right'
+// Show two songs for user choice and return a Promise
 function userChoose(leftSong, rightSong) {
   leftTitle.textContent = leftSong.name;
   rightTitle.textContent = rightSong.name;
   leftArt.src = leftSong.art;
   rightArt.src = rightSong.art;
 
-  // Remove previous listeners to avoid stacking
-  leftBtn.onclick = () => {
-    resolveChoice('left');
-  };
-  rightBtn.onclick = () => {
-    resolveChoice('right');
-  };
+  // Remove old event listeners
+  leftBtn.onclick = null;
+  rightBtn.onclick = null;
 
   return new Promise(resolve => {
     resolveChoice = resolve;
+    leftBtn.onclick = () => resolve('left');
+    rightBtn.onclick = () => resolve('right');
   });
 }
 
@@ -51,34 +58,44 @@ async function interactiveMergeSort(arr) {
   return await interactiveMerge(leftSorted, rightSorted);
 }
 
-// Interactive merge of two sorted arrays
+// Interactive merge with random left/right presentation
 async function interactiveMerge(leftArr, rightArr) {
   let merged = [];
   let i = 0, j = 0;
 
   while (i < leftArr.length && j < rightArr.length) {
-    // Show pair and wait for user choice
-    const choice = await userChoose(leftArr[i], rightArr[j]);
+    // Randomly decide which song to show on the left
+    const showLeftFirst = Math.random() > 0.5;
 
-    if (choice === 'left') {
-      merged.push(leftArr[i]);
+    const leftSong = leftArr[i];
+    const rightSong = rightArr[j];
+
+    const choice = await userChoose(
+      showLeftFirst ? leftSong : rightSong,
+      showLeftFirst ? rightSong : leftSong
+    );
+
+    // Interpret choice based on swap
+    if ((choice === 'left' && showLeftFirst) || (choice === 'right' && !showLeftFirst)) {
+      merged.push(leftSong);
       i++;
     } else {
-      merged.push(rightArr[j]);
+      merged.push(rightSong);
       j++;
     }
+
     comparisonsDone++;
     progressText.textContent = `Comparisons: ${comparisonsDone} / ${totalComparisons}`;
   }
 
-  // Append leftovers
+  // Add leftovers
   while (i < leftArr.length) merged.push(leftArr[i++]);
   while (j < rightArr.length) merged.push(rightArr[j++]);
 
   return merged;
 }
 
-// Show final ranked list in the progress div (simple text list)
+// Show final ranked list
 function showFinalRanking(sortedSongs) {
   progressText.textContent = 'Ranking complete! Final order:';
   leftBtn.style.display = 'none';
@@ -90,7 +107,7 @@ function showFinalRanking(sortedSongs) {
 
   const list = document.createElement('ol');
   list.style.color = 'white';
-  list.style.marginTop = '10px';
+  list.style.marginTop = '20px';
   for (const song of sortedSongs) {
     const li = document.createElement('li');
     li.textContent = song.name;
@@ -99,8 +116,9 @@ function showFinalRanking(sortedSongs) {
   document.body.appendChild(list);
 }
 
-// Start sorting process on page load
+// Initialize
 async function start() {
+  shuffleArray(songs); // Shuffle initial order
   totalComparisons = calculateTotalComparisons(songs.length);
   comparisonsDone = 0;
   progressText.textContent = `Comparisons: 0 / ${totalComparisons}`;
@@ -109,7 +127,5 @@ async function start() {
   showFinalRanking(ranked);
 }
 
-// Run after DOM loads
-window.onload = () => {
-  start();
-};
+// Start after DOM loads
+window.onload = start;
