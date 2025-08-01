@@ -1,31 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Killers Song Sorter</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Killers Song Sorter</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin: 20px 0;
+      font-size: 2rem;
+      color: #f1f1f1;
+      text-align: center;
+    }
+
+    #progress {
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+      color: #bbb;
+    }
+
+    #container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      width: 90%;
+      max-width: 1000px;
+      flex-wrap: wrap;
+    }
+
+    .choice {
+      flex: 1 1 300px;
+      background: #1e1e1e;
+      border-radius: 10px;
+      text-align: center;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .choice img {
+      width: 100%;
+      max-width: 250px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .choice h2 {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+    }
+
+    .choice button {
+      background: #e50914;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .choice button:hover {
+      background: #ff333f;
+    }
+
+    @media (max-width: 768px) {
+      #container {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>The Killers Song Sorter</h1>
-        <p>Pick your favorite from each pair to build your ranking!</p>
-
-        <div id="choices" class="choices">
-            <div class="song-card">
-                <img id="img1" src="" alt="Album Art">
-                <button id="btn1"></button>
-            </div>
-            <div class="song-card">
-                <img id="img2" src="" alt="Album Art">
-                <button id="btn2"></button>
-            </div>
-        </div>
-
-        <div id="progress"></div>
+  <h1>The Killers Song Sorter</h1>
+  <div id="progress">Loading...</div>
+  
+  <div id="container">
+    <div class="choice">
+      <img id="album-art-left" src="" alt="Album Art">
+      <h2 id="song-title-left">Song A</h2>
+      <button id="left-btn">Choose</button>
     </div>
+    <div class="choice">
+      <img id="album-art-right" src="" alt="Album Art">
+      <h2 id="song-title-right">Song B</h2>
+      <button id="right-btn">Choose</button>
+    </div>
+  </div>
 
-    <script src="data.js"></script>
-    <script src="app.js" defer></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
