@@ -1,4 +1,4 @@
-const killersSongs = [
+const songs = [
   // Hot Fuss (2004)
   { name: "Jenny Was a Friend of Mine", art: "https://upload.wikimedia.org/wikipedia/en/9/9a/HotFussCover.jpg" },
   { name: "Mr. Brightside", art: "https://upload.wikimedia.org/wikipedia/en/9/9a/HotFussCover.jpg" },
