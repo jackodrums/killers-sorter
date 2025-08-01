@@ -1,4 +1,3 @@
-// DOM Elements
 const songTitleLeft = document.getElementById("song-title-left");
 const songTitleRight = document.getElementById("song-title-right");
 const albumArtLeft = document.getElementById("album-art-left");
@@ -8,7 +7,6 @@ const rightBtn = document.getElementById("right-btn");
 const progress = document.getElementById("progress");
 const container = document.getElementById("container");
 
-// Shuffle array for randomness
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -17,21 +15,19 @@ function shuffle(array) {
   return array;
 }
 
-let currentPairs = []; // stack of comparisons
-let mergeQueue = []; // stack of merges
-let ranking = []; // final ranking
+let mergeQueue = [];
+let ranking = [];
 
-// Prepare shuffled pairs for sorting
 function prepareSorter(items) {
   items = shuffle(items);
-  // Start as individual lists for merge sort
   let lists = items.map((song) => [song]);
+
   while (lists.length > 1) {
     const newLists = [];
     for (let i = 0; i < lists.length; i += 2) {
       if (i + 1 < lists.length) {
         mergeQueue.push([lists[i], lists[i + 1], []]);
-        newLists.push([]); // placeholder
+        newLists.push([]);
       } else {
         newLists.push(lists[i]);
       }
@@ -41,7 +37,6 @@ function prepareSorter(items) {
   nextComparison();
 }
 
-// Show next comparison
 function nextComparison() {
   if (mergeQueue.length === 0) {
     finishRanking();
@@ -66,9 +61,49 @@ function nextComparison() {
     );
     progress.textContent = `Comparisons left: ${comparisonsLeft}`;
   } else {
-    // Merge leftovers and pop
     current[2].push(...leftList, ...rightList);
     mergeQueue.pop();
 
     if (mergeQueue.length > 0) {
-      //
+      const parent = mergeQueue[mergeQueue.length - 1];
+      for (let i = 0; i < parent.length; i++) {
+        if (parent[i].length === 0) {
+          parent[i] = current[2];
+          break;
+        }
+      }
+    } else {
+      ranking = current[2];
+    }
+    nextComparison();
+  }
+}
+
+function choose(side) {
+  const current = mergeQueue[mergeQueue.length - 1];
+  const [leftList, rightList, merged] = current;
+
+  if (side === "left") {
+    merged.push(leftList.shift());
+  } else {
+    merged.push(rightList.shift());
+  }
+  nextComparison();
+}
+
+function finishRanking() {
+  container.innerHTML = "<h2>Your Ranking:</h2>";
+  const ol = document.createElement("ol");
+  ranking.forEach((song) => {
+    const li = document.createElement("li");
+    li.textContent = song.name;
+    ol.appendChild(li);
+  });
+  container.appendChild(ol);
+  progress.textContent = "Sorting complete!";
+}
+
+leftBtn.addEventListener("click", () => choose("left"));
+rightBtn.addEventListener("click", () => choose("right"));
+
+prepareSorter(songs);
